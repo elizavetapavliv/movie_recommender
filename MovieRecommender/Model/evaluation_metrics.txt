@@ -1,0 +1,22 @@
+Evaluation Metrics
+Accuracy: 0,78
+Area Under Roc Curve: 0,86
+Area Under Precision Recall Curve: 0,86
+F1 Score: 0,78
+Entropy: 1
+Log-loss: 0,66
+Log-loss Reduction: 0,34
+Negative Precision: 0,78
+Negative Recall: 0,77
+Positive Precision: 0,77
+Positive Recall: 0,78
+Confusion matrix: TEST POSITIVE RATIO:	0,5006 (7530500,0/(7530500,0+7511742,0))
+Confusion table
+          ||======================
+PREDICTED || positive | negative | Recall
+TRUTH     ||======================
+ positive || 5 910 246 | 1 620 254 | 0,7848
+ negative || 1 741 051 | 5 770 691 | 0,7682
+          ||======================
+Precision ||   0,7725 |   0,7808 |
+
