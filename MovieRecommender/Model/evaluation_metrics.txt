@@ -3,9 +3,6 @@ Accuracy: 0,78
 Area Under Roc Curve: 0,86
 Area Under Precision Recall Curve: 0,86
 F1 Score: 0,78
-Entropy: 1
-Log-loss: 0,66
-Log-loss Reduction: 0,34
 Negative Precision: 0,78
 Negative Recall: 0,77
 Positive Precision: 0,77
