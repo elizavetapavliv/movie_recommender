@@ -59,21 +59,6 @@ namespace MovieRecommender.Services
             int userId = 0;
             var cosine = new Cosine();
 
-            //using StreamReader reader = new StreamReader(_userRatingsPath);
-            //string line;
-            //while ((line = reader.ReadLine()) != null)
-            //{
-            //    var split = line.Split();
-            //    var userRating = split.Skip(1).Select(double.Parse).ToArray();
-
-            //    var similarity = cosine.Similarity(userRating, currentUserRatings);
-            //    if (similarity > maxSimilarity)
-            //    {
-            //        maxSimilarity = similarity;
-            //        userId = int.Parse(split[0]);
-            //    }
-            //}
-
             foreach (var userRating in UserRatings)
             {
                 var similarity = cosine.Similarity(userRating.Value, currentUserRatings);
