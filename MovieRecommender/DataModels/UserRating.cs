@@ -1,8 +1,8 @@
 ﻿using Microsoft.ML.Data;
 
-namespace MovieRecommender
+namespace MovieRecommender.DataModels
 {
-    class Rating
+    public class UserRating
     {
         [LoadColumn(0)]
         public float UserId { get; set; }

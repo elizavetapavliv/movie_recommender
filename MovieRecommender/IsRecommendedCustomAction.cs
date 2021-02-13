@@ -1,5 +1,6 @@
 ﻿using Microsoft.ML.Transforms;
 using System;
+using MovieRecommender.DataModels;
 
 namespace MovieRecommender
 {

@@ -1,4 +1,4 @@
-﻿namespace MovieRecommender
+﻿namespace MovieRecommender.DataModels
 {
     public class Movie
     {

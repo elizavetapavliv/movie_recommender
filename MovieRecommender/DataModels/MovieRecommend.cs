@@ -1,6 +1,6 @@
 ﻿using Microsoft.ML.Data;
 
-namespace MovieRecommender
+namespace MovieRecommender.DataModels
 {
     class MovieRecommend
     {
