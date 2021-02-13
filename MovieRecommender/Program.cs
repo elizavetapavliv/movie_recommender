@@ -8,14 +8,14 @@ namespace MovieRecommender
         {
             var mlContext = new MLContext();
             var dataProcessor = new DataProcessor(mlContext);
-           // (IDataView trainingDataView, IDataView testDataView) = dataProcessor.LoadData();
+            (IDataView trainingDataView, IDataView testDataView) = dataProcessor.LoadData();
             dataProcessor.InitUserRatingsData();
-            //dataProcessor.InitBestMoviesData();
+            dataProcessor.InitBestMoviesData();
 
-            //var modelPreparer = new ModelPreparer();
-            //var model = modelPreparer.BuildAndTrainModel(mlContext, trainingDataView);
-            //modelPreparer.EvaluateModel(mlContext, testDataView, model);
-            //modelPreparer.SaveModel(mlContext, trainingDataView, model);
+            var modelPreparer = new ModelPreparer();
+            var model = modelPreparer.BuildAndTrainModel(mlContext, trainingDataView);
+            modelPreparer.EvaluateModel(mlContext, testDataView, model);
+            modelPreparer.SaveModel(mlContext, trainingDataView, model);
         }
     }
 }

@@ -16,7 +16,6 @@ namespace MovieRecommender
 
         private List<Movie> _movies;
         private List<UserRating> _ratings;
-        private Dictionary<float, int> _movieIndex;
         private Dictionary<float, string[]> _movieGenres;
         private Dictionary<string, int> _genreIndex;
         private List<Movie> _bestMovies;
@@ -63,17 +62,6 @@ namespace MovieRecommender
                 }
 
                 return _ratings;
-            }
-        }
-
-        public Dictionary<float, int> MovieIndex
-        {
-            get
-            {
-                return _movieIndex ??= Movies
-                    .OrderBy(x => x.Id)
-                    .Select((movie, i) => new {movie.Id, Index = i})
-                    .ToDictionary(x => x.Id, x => x.Index);
             }
         }
 
@@ -140,17 +128,6 @@ namespace MovieRecommender
 
         public double[] GetUserAllMoviesRatings(IEnumerable<Rating> ratings)
         {
-            //var maxRatingSum = 5.0 * Movies.Count / VectorCount;
-            //var userRatings = Enumerable.Repeat(0.0, VectorCount).ToArray();
-            //foreach (var rating in ratings)
-            //{
-            //    var ind = MovieIndex[rating.MovieId] % VectorCount;
-            //    userRatings[ind] += rating.RatingValue;
-            //}
-
-            //userRatings = userRatings.Select(r => r / maxRatingSum).ToArray();
-            //return userRatings;
-
             var userRatings = Enumerable.Repeat(0.0, _genres.Count).ToArray();
             var genreRatingsCount = new Dictionary<int, int>();
 
@@ -185,16 +162,6 @@ namespace MovieRecommender
             }
 
             return userRatings;
-
-            //var maxRating = 5.0;
-            //var userRatings = Enumerable.Repeat(0.0, Movies.Count).ToArray();
-            //foreach (var rating in ratings)
-            //{
-            //    userRatings[MovieIndex[rating.MovieId]] = rating.RatingValue;
-            //}
-
-            //userRatings = userRatings.Select(r => r / maxRating).ToArray();
-            //return userRatings;
         }
 
         public void InitBestMoviesData()
