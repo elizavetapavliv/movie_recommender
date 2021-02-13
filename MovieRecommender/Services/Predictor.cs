@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Accord.Math.Distances;
@@ -24,36 +23,26 @@ namespace MovieRecommender.Services
             _userRatingsPath = _dataProcessor.UserRatingsPath;
         }
 
-        public Dictionary<int, double[]> UserRatings
-        {
-            get
-            {
-                if (_userRatings == null)
-                {
-                    _userRatings = new Dictionary<int, double[]>();
-                    var data = File.ReadAllLines(_userRatingsPath);
-                    foreach (var str in data)
-                    {
-                        var split = str.Split();
-                        _userRatings[int.Parse(split[0])] = split.Skip(1).Select(double.Parse).ToArray();
-                    }
-                }
+       public Dictionary<int, double[]> UserRatings
+       {
+           get
+           {
+               if (_userRatings == null)
+               {
+                   _userRatings = new Dictionary<int, double[]>();
+                   var data = File.ReadAllLines(_userRatingsPath);
+                   foreach (var str in data)
+                   {
+                       var split = str.Split();
+                       _userRatings[int.Parse(split[0])] = split.Skip(1).Select(double.Parse).ToArray();
+                   }
+               }
 
-                return _userRatings;
-            }
-        }
+               return _userRatings;
+           }
+       }
 
-        private void ReadUserRatings()
-        {
-            using StreamReader reader = new StreamReader(_userRatingsPath);
-            string line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                Console.WriteLine(line);
-            }
-        }
-
-        private int FindSimilarUserId(double[] currentUserRatings)
+       private int FindSimilarUserId(double[] currentUserRatings)
         {
             double maxSimilarity = 0.0;
             int userId = 0;

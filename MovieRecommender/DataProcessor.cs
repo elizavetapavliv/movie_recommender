@@ -129,7 +129,6 @@ namespace MovieRecommender
         public double[] GetUserAllMoviesRatings(IEnumerable<Rating> ratings)
         {
             var userRatings = Enumerable.Repeat(0.0, _genres.Count).ToArray();
-            var genreRatingsCount = new Dictionary<int, int>();
 
             foreach (var rating in ratings)
             {
@@ -137,28 +136,15 @@ namespace MovieRecommender
 
                 foreach (var genre in genres)
                 {
-                    var genreInd = GenreIndex[genre];
-                    userRatings[genreInd] += rating.RatingValue;
-
-                    if (genreRatingsCount.ContainsKey(genreInd))
-                    {
-                        genreRatingsCount[genreInd]++;
-                    }
-                    else
-                    {
-                        genreRatingsCount.Add(genreInd, 1);
-                    }
-                 
+                    userRatings[GenreIndex[genre]] += rating.RatingValue;
                 }
             }
 
+            var maxGenreRatingSum = 5.0 * Movies.Count;
+
             for (var i = 0; i < _genres.Count; i++)
             {
-                if (genreRatingsCount.ContainsKey(i))
-                {
-                    var maxRating = 5.0 * genreRatingsCount[i];
-                    userRatings[i] /= maxRating;
-                }
+                userRatings[i] /= maxGenreRatingSum;
             }
 
             return userRatings;
