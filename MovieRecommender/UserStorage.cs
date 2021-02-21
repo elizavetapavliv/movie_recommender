@@ -8,7 +8,7 @@ namespace MovieRecommender
     public class UserStorage
     {
         private const string ConnectionString =
-            "";
+            "DefaultEndpointsProtocol=https;AccountName=rgcinemabotdiag;AccountKey=DCuqicvptPG1pYRZL+YYhZwcrg1LgSAKYXZtKczjkBXAvM1Z5+y1Hn261h6qMAbujfuNd69lKkaBXE57msHSoQ==;EndpointSuffix=core.windows.net";
 
         private const string TableName = "Ratings";
         private const string PartitionKey = "Users";

@@ -1,93 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Microsoft.ML;
+﻿using System.Collections.Generic;
 using MovieRecommender.DataModels;
 
 namespace MovieRecommender.Services
 {
-    public class RecommenderService
+    public class RecommenderService : IRecommenderService
     {
         private readonly Predictor _predictor;
         private readonly UserProfile _userProfile;
-        private readonly DataProcessor _dataProcessor;
 
-        public RecommenderService()
+        public RecommenderService(
+            Predictor predictor,
+            UserProfile profile)
         {
-            var mlContext = new MLContext();
-            var trainedModel =
-                mlContext.Model.Load(Path.Combine("Model", "MovieRecommenderModel.zip"), out _);
-
-            _dataProcessor = new DataProcessor(mlContext);
-            _predictor = new Predictor(mlContext, trainedModel, _dataProcessor);
-            _userProfile = new UserProfile(new UserStorage());
+            _predictor = predictor;
+            _userProfile = profile;
         }
 
-        public void Login(string userName)
+        public bool Login(string userName)
         {
-            if (!_userProfile.UserExists(userName))
-            {
-                Console.WriteLine("Hello! Here are your initial recommendations. Please, rate them from 1 to 5, so we can " +
-                                  "complete more appropriate recommendations for you.");
-                PrintHeader();
-                PrintMovies(_dataProcessor.BestMovies);
-                _userProfile.CreateNewUserRatings(userName, GetRatingsFromUser());
-            }
+            return _userProfile.UserExists(userName);
         }
 
-        public void GetRecommendations(string userName)
+        public IEnumerable<Recommendation> GetRecommendations(string userName)
         {
-            Console.WriteLine("Loading recommendations for you... " +
-                              "Please, rate movies you liked from 1 to 5 for further recommendations.");
-
-            var recommendedMovies = _predictor.PredictTop5(_userProfile.GetUserRatings(userName));
-            PrintHeader();
-            foreach (var recommended in recommendedMovies)
-            {
-                Console.WriteLine(
-                    $"{recommended.Movie.Id}. {_dataProcessor.GetMovieTitle(recommended.Movie.Title)}, " +
-                    $"{string.Join("|", recommended.Movie.Genres)} " +
-                    $"(Probability {recommended.Prediction.Probability * 100 : 0.##}%)");
-            }
-            _userProfile.UpdateUserRatings(userName, GetRatingsFromUser());
+            return _predictor.PredictTop5(_userProfile.GetUserRatings(userName));
         }
 
-        private IList<Rating> GetRatingsFromUser()
+        public void UpdateUserRatings(string userName, IList<Rating> ratings)
         {
-            var ratings = new List<Rating>();
-
-            Console.WriteLine("\nEnter your ratings in format <movieId rating>. To finish process, type 'exit'.");
-            while (true)
-            {
-                var input = Console.ReadLine();
-                if (input == "exit")
-                {
-                    break;
-                }
-
-                var split = input.Split();
-                ratings.Add(new Rating
-                {
-                    MovieId = int.Parse(split[0]),
-                    RatingValue = float.Parse(split[1])
-                });
-            }
-            return ratings;
+            _userProfile.UpdateUserRatings(userName, ratings);
         }
 
-        private void PrintHeader()
+        public void CreateUserRatings(string userName, IList<Rating> ratings)
         {
-            Console.WriteLine("MovieId. Title, Genres");
+            _userProfile.CreateNewUserRatings(userName, ratings);
         }
-
-        private void PrintMovies(IEnumerable<Movie> movies)
-        {
-            foreach (var movie in movies)
-            {
-                Console.WriteLine(
-                    $"{movie.Id}. {_dataProcessor.GetMovieTitle(movie.Title)}, {string.Join("|", movie.Genres)}");
-            }
-        }
-
     }
 }

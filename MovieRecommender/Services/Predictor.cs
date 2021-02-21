@@ -15,10 +15,10 @@ namespace MovieRecommender.Services
         private readonly MLContext _mlContext;
         private readonly ITransformer _model;
 
-       public Predictor(MLContext mlContext, ITransformer model, DataProcessor dataProcessor)
+       public Predictor(MLContext mlContext, DataProcessor dataProcessor)
         {
             _mlContext = mlContext;
-            _model = model;
+            _model = mlContext.Model.Load(Path.Combine("Model", "MovieRecommenderModel.zip"), out _);
             _dataProcessor = dataProcessor;
             _userRatingsPath = _dataProcessor.UserRatingsPath;
         }

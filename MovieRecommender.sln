@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieRecommender", "MovieRecommender\MovieRecommender.csproj", "{41487607-566F-41EE-9039-EFDE05225333}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieRecommenderConsumer", "MovieRecommenderConsumer\MovieRecommenderConsumer.csproj", "{BDEC91CE-A267-49C4-87E0-EFD8BD3B4037}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MovieRecommenderConsumer", "MovieRecommenderConsumer\MovieRecommenderConsumer.csproj", "{BDEC91CE-A267-49C4-87E0-EFD8BD3B4037}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieRecommenderBot", "MovieRecommenderBot\MovieRecommenderBot.csproj", "{C1E2A66D-855C-4DCB-B9B5-1BB3B89CDA19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{BDEC91CE-A267-49C4-87E0-EFD8BD3B4037}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDEC91CE-A267-49C4-87E0-EFD8BD3B4037}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDEC91CE-A267-49C4-87E0-EFD8BD3B4037}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1E2A66D-855C-4DCB-B9B5-1BB3B89CDA19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1E2A66D-855C-4DCB-B9B5-1BB3B89CDA19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1E2A66D-855C-4DCB-B9B5-1BB3B89CDA19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1E2A66D-855C-4DCB-B9B5-1BB3B89CDA19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

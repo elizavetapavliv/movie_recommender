@@ -1,0 +1,144 @@
+﻿{
+  "luis_schema_version": "3.2.0",
+  "versionId": "0.1",
+  "name": "Recommendation",
+  "desc": "Luis Model for MovieRecommenderBot",
+  "culture": "en-us",
+  "tokenizerVersion": "1.0.0",
+  "intents": [
+    {
+      "name": "GetRecommendations"
+    },
+    {
+      "name": "Cancel"
+    },
+    {
+      "name": "Help"
+    },
+    {
+      "name": "None"
+    }
+  ],
+  "entities": [],
+  "composites": [],
+  "closedLists": [],
+  "patternAnyEntities": [],
+  "regex_entities": [],
+  "prebuiltEntities": [],
+  "model_features": [],
+  "regex_features": [],
+  "patterns": [],
+  "utterances": [
+    {
+      "text": "get recommendations",
+      "intent": "GetRecommendations",
+      "entities": []
+    },
+    {
+      "text": "recommendations",
+      "intent": "GetRecommendations",
+      "entities": []
+    },
+    {
+      "text": "recommend",
+      "intent": "GetRecommendations",
+      "entities": []
+    },
+    {
+      "text": "what to see",
+      "intent": "GetRecommendations",
+      "entities": []
+    },
+    {
+      "text": "what to watch",
+      "intent": "GetRecommendations",
+      "entities": []
+    },
+    {
+      "text": "give recommendations",
+      "intent": "GetRecommendations",
+      "entities": []
+    },
+    {
+      "text": "best movies for me",
+      "intent": "GetRecommendations",
+      "entities": []
+    },
+    {
+      "text": "get predictions",
+      "intent": "GetRecommendations",
+      "entities": []
+    },
+    {
+      "text": "make prediction for me",
+      "intent": "GetRecommendations",
+      "entities": []
+    },
+    {
+      "text": "book a ticket",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "turn on the movie",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "bye",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "cancel recommendations",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "exit",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "log off",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "nothing",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "nth",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "i'd like to rent a car",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "ignore",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "?",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "help",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "help me",
+      "intent": "Help",
+      "entities": []
+    }
+  ],
+  "settings": []
+}

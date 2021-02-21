@@ -10,9 +10,12 @@ namespace MovieRecommender
 {
     public class DataProcessor
     {
-        public readonly string UserRatingsPath = Path.Combine(@"../../../../", "MovieRecommender", "Data", "user_ratings.csv");
-        private readonly string _bestMoviesPath = Path.Combine(@"../../../../", "MovieRecommender", "Data", "best_movies.csv");
-        private readonly string _moviesPath = Path.Combine("Data", "movies.csv");
+        public readonly string UserRatingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+            @"../../../../", "MovieRecommender", "Data", "user_ratings.csv");
+        private readonly string _bestMoviesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+            @"../../../../", "MovieRecommender", "Data", "best_movies.csv");
+        private readonly string _moviesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+            @"../../../../", "MovieRecommender", "Data", "movies.csv");
 
         private List<Movie> _movies;
         private List<UserRating> _ratings;
