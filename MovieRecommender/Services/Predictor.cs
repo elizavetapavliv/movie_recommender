@@ -63,6 +63,7 @@ namespace MovieRecommender.Services
         public IEnumerable<Recommendation> PredictTop5(IEnumerable<Rating> ratings)
         {
             ratings = ratings.ToList();
+
             var similarUserId = FindSimilarUserId(_dataProcessor.GetUserAllMoviesRatings(ratings));
             var predictionEngine = _mlContext.Model
                 .CreatePredictionEngine<MovieRating, MovieRatingPrediction>(_model);

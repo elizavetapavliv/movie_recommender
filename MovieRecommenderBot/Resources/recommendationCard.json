@@ -1,0 +1,132 @@
+{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "size": "Medium",
+      "weight": "Bolder",
+      "text": "${Title}",
+      "horizontalAlignment": "Center",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "${Genres}",
+      "isSubtle": true,
+      "horizontalAlignment": "Center",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "size": "Small",
+      "text": "${Probability}",
+      "isSubtle": true,
+      "horizontalAlignment": "Center",
+      "wrap": true
+    },
+    {
+      "type": "Image",
+      "url": "${ImageUrl}"
+    },
+    {
+      "type": "ColumnSet",
+      "spacing": "Medium",
+      "horizontalAlignment": "Center",
+      "columns": [
+        {
+          "type": "Column",
+          "selectAction": {
+            "type": "Action.Submit",
+            "data": {
+              "MovieId": "${MovieId}",
+              "RatingValue": 1
+            }
+          },
+          "items": [
+            {
+              "type": "Image",
+              "horizontalAlignment": "Center",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/1/18/Five-pointed_star.svg"
+            }
+          ],
+          "width": "30px"
+        },
+        {
+          "type": "Column",
+          "selectAction": {
+            "type": "Action.Submit",
+            "data": {
+              "MovieId": "${MovieId}",
+              "RatingValue": 2
+            },
+            "iconUrl": "https://commons.wikimedia.org/wiki/File:Star_and_heart_nevit_090.svg#/media/File:Star_and_heart_nevit_090.svg"
+          },
+          "items": [
+            {
+              "type": "Image",
+              "horizontalAlignment": "Center",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/1/18/Five-pointed_star.svg"
+            }
+          ],
+          "width": "30px"
+        },
+        {
+          "type": "Column",
+          "selectAction": {
+            "type": "Action.Submit",
+            "data": {
+              "MovieId": "${MovieId}",
+              "RatingValue": 3
+            }
+          },
+          "items": [
+            {
+              "type": "Image",
+              "horizontalAlignment": "Center",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/1/18/Five-pointed_star.svg"
+            }
+          ],
+          "width": "30px"
+        },
+        {
+          "type": "Column",
+          "selectAction": {
+            "type": "Action.Submit",
+            "data": {
+              "MovieId": "${MovieId}",
+              "RatingValue": 4
+            }
+          },
+          "items": [
+            {
+              "type": "Image",
+              "horizontalAlignment": "Center",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/1/18/Five-pointed_star.svg"
+            }
+          ],
+          "width": "30px"
+        },
+        {
+          "type": "Column",
+          "selectAction": {
+            "type": "Action.Submit",
+            "data": {
+              "MovieId": "${MovieId}",
+              "RatingValue": 5
+            }
+          },
+          "items": [
+            {
+              "type": "Image",
+              "horizontalAlignment": "Center",
+              "url": "https://upload.wikimedia.org/wikipedia/commons/1/18/Five-pointed_star.svg"
+            }
+          ],
+          "width": "30px"
+        }
+      ]
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0"
+}

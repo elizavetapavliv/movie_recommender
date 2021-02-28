@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveCards;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -19,19 +21,23 @@ namespace MovieRecommenderBot.Dialogs
         private readonly IStatePropertyAccessor<string> _userNameStateProperty;
         private readonly DataProcessor _dataProcessor;
         private readonly IMoviePosterService _moviePosterService;
+        private string _userName;
 
         public MainDialog(UserState userState,
             RecommendationRecognizer luisRecognizer,
             IRecommenderService recommenderService,
             DataProcessor dataProcessor,
-            IMoviePosterService moviePosterService)
+            IMoviePosterService moviePosterService,
+            PickRatingDialog pickRatingDialog)
             : base(nameof(MainDialog))
         {
             AddDialog(new TextPrompt(nameof(TextPrompt)));
+            AddDialog(pickRatingDialog);
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
-                IntroStepAsync,
-                ActStepAsync,
+                LoginStepAsync,
+                CreateRatingStepAsync,
+                RecommendationStepAsync,
                 FinalStepAsync,
             }));
 
@@ -45,29 +51,32 @@ namespace MovieRecommenderBot.Dialogs
             _moviePosterService = moviePosterService;
         }
 
-        private async Task<DialogTurnResult> IntroStepAsync(
+        private async Task<DialogTurnResult> LoginStepAsync(
             WaterfallStepContext stepContext,
            CancellationToken cancellationToken)
         {
-            var userName = await _userNameStateProperty.GetAsync(stepContext.Context, () => default, cancellationToken);
+            _userName = await _userNameStateProperty.GetAsync(stepContext.Context, () => default, cancellationToken);
             
-            if (!_recommenderService.Login(userName))
+            if (!_recommenderService.Login(_userName))
             {
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("Loading your initial recommendations...",
                     InputHints.IgnoringInput), cancellationToken);
 
                 await SendMoviesAsync(_dataProcessor.BestMovies, stepContext, cancellationToken);
                 await PrintRateAsync(stepContext, cancellationToken);
-
-                //_recommenderService.CreateUserRatings(userName, GetRatingsFromUser());
-
-                //return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = reply });
+                return await stepContext.BeginDialogAsync(nameof(PickRatingDialog), new List<Rating>(), cancellationToken);
             }
-        
 
-            if (!_luisRecognizer.IsConfigured)
+            return await stepContext.NextAsync(null, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> CreateRatingStepAsync(
+            WaterfallStepContext stepContext,
+            CancellationToken cancellationToken)
+        {
+            if (stepContext.Result != null && stepContext.Result is List<Rating> ratings)
             {
-                return await stepContext.NextAsync(null, cancellationToken);
+                _recommenderService.CreateUserRatings(_userName, ratings);
             }
 
             var messageText = stepContext.Options?.ToString();
@@ -80,7 +89,7 @@ namespace MovieRecommenderBot.Dialogs
             }, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> ActStepAsync(
+        private async Task<DialogTurnResult> RecommendationStepAsync(
             WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
@@ -94,18 +103,15 @@ namespace MovieRecommenderBot.Dialogs
             switch (luisResult.TopIntent().intent)
             {
                 case RecommendationLuis.Intent.GetRecommendations:
-                    var userName = await _userNameStateProperty.GetAsync(stepContext.Context, () => default, cancellationToken);
-                    var recommendations = _recommenderService.GetRecommendations(userName);
+                    var recommendations = _recommenderService.GetRecommendations(_userName);
 
-                    await stepContext.Context.SendActivityAsync(MessageFactory.Text("Loading your recommendations...",
-                        InputHints.IgnoringInput), cancellationToken);
+                    await stepContext.Context.SendActivityAsync(
+                        MessageFactory.Text("Loading your recommendations..."),
+                        cancellationToken);
 
                     await SendRecommendationsAsync(recommendations, stepContext, cancellationToken);
                     await PrintRateAsync(stepContext, cancellationToken);
-
-                    //Save ratings
-
-                    return await stepContext.NextAsync(null, cancellationToken);
+                    return await stepContext.BeginDialogAsync(nameof(PickRatingDialog), new List<Rating>(), cancellationToken);
 
                 case RecommendationLuis.Intent.Help:
                     var helpMessageText = "Try asking me to 'recommend movies'.";
@@ -131,23 +137,7 @@ namespace MovieRecommenderBot.Dialogs
             WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-            //TODO: print recommendations
-                //var messageText = "Your link for booking ticket";
-                //messageText = language == TranslationSettings.defaultLanguage ? messageText :
-                //(await translationService.TranslateAsync(new TranslatorRequest[] { new TranslatorRequest(messageText) }, language))[0];
-                //var reply = MessageFactory.Attachment(new List<Attachment>());
-                //var heroCard = new HeroCard()
-                //{
-                //    Title = messageText,
-                //    Tap = new CardAction()
-                //    {
-                //        Type = ActionTypes.OpenUrl,
-                //        Value = cinemaService.GetOrderTicketUri(result.Movie.Code, result.Show.Id)
-                //    }
-                //};
-                //reply.Attachments.Add(heroCard.ToAttachment());
-                //await stepContext.Context.SendActivityAsync(reply, cancellationToken);
-            
+            _recommenderService.UpdateUserRatings(_userName, stepContext.Result as List<Rating>);
             var promptMessage = "What else can I do?";
             return await stepContext.ReplaceDialogAsync(InitialDialogId, promptMessage, cancellationToken);
         }
@@ -157,10 +147,10 @@ namespace MovieRecommenderBot.Dialogs
             CancellationToken cancellationToken)
         {
             var rateRecommendations = "Please, rate recommendations from 1 to 5 " +
-                                      "for more personalized recommendations in future.";
+                                      "for more personalized recommendations in future. " +
+                                      "Enter some message, for example, 'next', to continue.";
 
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text(rateRecommendations,
-                InputHints.IgnoringInput), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text(rateRecommendations), cancellationToken);
         }
 
         private async Task SendMoviesAsync(
@@ -171,25 +161,29 @@ namespace MovieRecommenderBot.Dialogs
             var reply = stepContext.Context.Activity.CreateReply();
             reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
 
+            var paths = new[] { ".", "Resources", "movieCard.json" };
+            var adaptiveCardJson = await File.ReadAllTextAsync(Path.Combine(paths), cancellationToken);
+            var template = new AdaptiveCards.Templating.AdaptiveCardTemplate(adaptiveCardJson);
+
             foreach (var movie in movies)
             {
-                var heroCard = new HeroCard
+                var card = template.Expand(new
                 {
                     Title = _dataProcessor.GetMovieTitle(movie.Title),
-                    Subtitle = string.Join(" | ", movie.Genres),
-                    Images = new List<CardImage>
-                    {
-                        new CardImage
-                        {
-                            Url = await _moviePosterService.GetPosterLinkAsync((int)movie.Id)
-                        }
-                    }
+                    Genres = string.Join(" | ", movie.Genres),
+                    MovieId = movie.Id,
+                    ImageUrl = await _moviePosterService.GetPosterLinkAsync((int) movie.Id)
+                });
+
+                var adaptiveCardAttachment = new Attachment
+                {
+                    ContentType = AdaptiveCard.ContentType,
+                    Content = AdaptiveCard.FromJson(card).Card
                 };
-                reply.Attachments.Add(heroCard.ToAttachment());
+
+                reply.Attachments.Add(adaptiveCardAttachment);
             }
-
             await stepContext.Context.SendActivityAsync(reply, cancellationToken);
-
         }
 
         private async Task SendRecommendationsAsync(
@@ -200,22 +194,28 @@ namespace MovieRecommenderBot.Dialogs
             var reply = stepContext.Context.Activity.CreateReply();
             reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
 
+            var paths = new[] { ".", "Resources", "recommendationCard.json" };
+            var adaptiveCardJson = await File.ReadAllTextAsync(Path.Combine(paths), cancellationToken);
+            var template = new AdaptiveCards.Templating.AdaptiveCardTemplate(adaptiveCardJson);
+
             foreach (var recommendation in recommendations)
             {
-                var heroCard = new HeroCard
+                var card = template.Expand(new
                 {
                     Title = _dataProcessor.GetMovieTitle(recommendation.Movie.Title),
-                    Subtitle = string.Join(" | ", recommendation.Movie.Genres),
-                    Text = $"Probability {recommendation.Prediction.Probability * 100: 0.##}%",
-                    Images = new List<CardImage>
-                    {
-                        new CardImage
-                        {
-                            Url = await _moviePosterService.GetPosterLinkAsync((int) recommendation.Movie.Id)
-                        }
-                    }
+                    MovieId = recommendation.Movie.Id,
+                    Genres = string.Join(" | ", recommendation.Movie.Genres),
+                    Probability = $"Probability {recommendation.Prediction.Probability * 100: 0.##}%",
+                    ImageUrl = await _moviePosterService.GetPosterLinkAsync((int)recommendation.Movie.Id)
+                });
+
+                var adaptiveCardAttachment = new Attachment
+                {
+                    ContentType = AdaptiveCard.ContentType,
+                    Content = AdaptiveCard.FromJson(card).Card
                 };
-                reply.Attachments.Add(heroCard.ToAttachment());
+
+                reply.Attachments.Add(adaptiveCardAttachment);
             }
 
             await stepContext.Context.SendActivityAsync(reply, cancellationToken);

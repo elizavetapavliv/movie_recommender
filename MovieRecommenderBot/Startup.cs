@@ -32,6 +32,7 @@ namespace MovieRecommenderBot
             services.AddSingleton<IStorage, MemoryStorage>();
             services.AddSingleton<UserState>();
             services.AddSingleton<ConversationState>();
+            services.AddSingleton<PickRatingDialog>();
             services.AddSingleton<MainDialog>();
             services.AddTransient<IBot, Bot<MainDialog>>();
 

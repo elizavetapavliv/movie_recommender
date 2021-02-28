@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using MovieRecommender.DataModels;
 
 namespace MovieRecommender.Services
@@ -28,11 +29,19 @@ namespace MovieRecommender.Services
 
         public void UpdateUserRatings(string userName, IList<Rating> ratings)
         {
+            ratings = ratings.GroupBy(r => r.MovieId)
+                .Select(g => g.Last())
+                .ToList();
+
             _userProfile.UpdateUserRatings(userName, ratings);
         }
 
         public void CreateUserRatings(string userName, IList<Rating> ratings)
         {
+            ratings = ratings.GroupBy(r => r.MovieId)
+                .Select(g => g.Last())
+                .ToList();
+
             _userProfile.CreateNewUserRatings(userName, ratings);
         }
     }
