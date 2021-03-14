@@ -34,6 +34,9 @@
     <None Update="Data\recommendation-ratings-train.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Data\user_ratings.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Model\MovieRecommenderModel.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.ApplicationInsights;
+using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.ML;
 using MovieRecommender;
 using MovieRecommender.Services;
+using MovieRecommenderBot.Bots;
 using MovieRecommenderBot.CognitiveModels;
 using MovieRecommenderBot.Dialogs;
 using MovieRecommenderBot.Options;
@@ -50,6 +55,23 @@ namespace MovieRecommenderBot
             services.AddSingleton<IMoviePosterService, MoviePosterService>();
             services.Configure<UriOptions>(Configuration.GetSection(UriOptions.Uri));
             services.Configure<LoginOptions>(Configuration.GetSection(LoginOptions.Login));
+
+            services.AddApplicationInsightsTelemetry();
+            services.AddSingleton<IBotTelemetryClient, BotTelemetryClient>();
+            services.AddSingleton<ITelemetryInitializer, OperationCorrelationTelemetryInitializer>();
+            services.AddSingleton<ITelemetryInitializer, TelemetryBotIdInitializer>();
+            services.AddSingleton(sp =>
+            {
+                var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
+                var loggerMiddleware = sp.GetService<TelemetryLoggerMiddleware>();
+                return new TelemetryInitializerMiddleware(httpContextAccessor, loggerMiddleware);
+            });
+            services.AddSingleton(sp =>
+            {
+                var telemetryClient = sp.GetService<IBotTelemetryClient>();
+                return new TelemetryLoggerMiddleware(telemetryClient, true);
+            });
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -62,6 +84,7 @@ namespace MovieRecommenderBot
             app.UseDefaultFiles()
                 .UseStaticFiles()
                 .UseRouting()
+                .UseCors()
                 .UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();

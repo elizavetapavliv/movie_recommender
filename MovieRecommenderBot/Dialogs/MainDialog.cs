@@ -66,7 +66,6 @@ namespace MovieRecommenderBot.Dialogs
                 await PrintRateAsync(stepContext, cancellationToken);
                 return await stepContext.BeginDialogAsync(nameof(PickRatingDialog), new List<Rating>(), cancellationToken);
             }
-
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
@@ -123,11 +122,9 @@ namespace MovieRecommenderBot.Dialogs
                         InputHints.IgnoringInput), cancellationToken);
                     return await stepContext.CancelAllDialogsAsync(cancellationToken);
 
-                default:
+                case RecommendationLuis.Intent.None:
                     var notUnderstandMessageText = "Sorry, I didn't get that. Please try asking in a different way";
-                    var notUnderstandMessage = MessageFactory.Text(notUnderstandMessageText, InputHints.IgnoringInput);
-                    await stepContext.Context.SendActivityAsync(notUnderstandMessage, cancellationToken);
-                    break;
+                    return await stepContext.ReplaceDialogAsync(InitialDialogId, notUnderstandMessageText, cancellationToken);
             }
 
             return await stepContext.NextAsync(null, cancellationToken);
